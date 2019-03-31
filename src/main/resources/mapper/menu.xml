@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.didoumi.www.data.dao.MenuDao" >
+
+
+    <select id="findFirstMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
+          select m1.id,m1.menuId,m1.parentMenuId,m1.menuName,m1.type from menu m1 where type=1 and parentMenuId=0 and userId=#{uid}
+    </select>
+    <select id="findSecondMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
+          select m2.* from menu m2 where type=1 and parentMenuId not in (0) and userId=#{uid}
+    </select>
+    <select id="findThirdMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
+          select m3.* from menu m3 where type=2 and userId=#{uid}
+    </select>
+</mapper>

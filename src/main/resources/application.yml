@@ -1,0 +1,26 @@
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+  datasource:
+    url: jdbc:mysql://47.98.188.253:3306/teachcrm
+    username: root
+    password: qby519004654
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  main:
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
+    suffix: .html
+    encoding: UTF-8
+    mode: LEGACYHTML5
+
+mybatis:
+  type-aliases-package: com.didoumi.www.data.entity
+  mapper-locations: classpath:mapper/*.xml
+server:
+  port: 8080
+  servlet:
+    context-path: /crm
