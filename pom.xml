@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.didoumi.www</groupId>
-    <artifactId>data</artifactId>
+    <artifactId>note</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>data</name>
+    <name>note</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
