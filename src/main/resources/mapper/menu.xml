@@ -12,4 +12,30 @@
     <select id="findThirdMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
           select m3.* from menu m3 where type=2 and userId=#{uid}
     </select>
+
+    <resultMap id="menuMap" type="com.didoumi.www.data.entity.Menu">
+        <id property="uid" column="uid"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <collection property="roles" ofType="com.didoumi.www.data.entity.Role">
+            <id property="rid" column="rid"/>
+            <result property="rname" column="rname"/>
+            <collection property="permissions" ofType="com.didoumi.www.data.entity.Permission">
+                <id property="pid" column="pid"/>
+                <result property="name" column="name"/>
+                <result property="url" column="url"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="selectMenu" resultMap="menuMap" parameterType="String">
+        SELECT  m1.id,m1.`parentMenuId`,m1.`menuName`,m1.`type`,
+                m2.id,m2.`parentMenuId`,m2.`menuName`,m2.`type`,
+                m3.`id`,m3.parentMenuId,m3.`menuName`,m3.`type`
+        FROM menu m1
+        LEFT JOIN menu m2 ON m1.id = m2.`parentMenuId`
+        LEFT JOIN menu m3 ON m1.id = m2.`parentMenuId` AND m2.`id` = m3.`parentMenuId`
+        WHERE m1.`parentMenuId`=0 and userId=#{uid}
+        ORDER BY m1.`parentMenuId` ASC
+    </select>
 </mapper>
