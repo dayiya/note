@@ -2,40 +2,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.didoumi.www.data.dao.MenuDao" >
 
-
-    <select id="findFirstMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
-          select m1.id,m1.menuId,m1.parentMenuId,m1.menuName,m1.type from menu m1 where type=1 and parentMenuId=0 and userId=#{uid}
-    </select>
-    <select id="findSecondMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
-          select m2.* from menu m2 where type=1 and parentMenuId not in (0) and userId=#{uid}
-    </select>
-    <select id="findThirdMenuByUser" resultType="com.didoumi.www.data.entity.Menu" parameterType="String" >
-          select m3.* from menu m3 where type=2 and userId=#{uid}
-    </select>
-
     <resultMap id="menuMap" type="com.didoumi.www.data.entity.Menu">
-        <id property="uid" column="uid"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <collection property="roles" ofType="com.didoumi.www.data.entity.Role">
-            <id property="rid" column="rid"/>
-            <result property="rname" column="rname"/>
-            <collection property="permissions" ofType="com.didoumi.www.data.entity.Permission">
-                <id property="pid" column="pid"/>
-                <result property="name" column="name"/>
-                <result property="url" column="url"/>
+        <id property="id" column="firstId"/>
+        <result property="menuId" column="firstMenuId"/>
+        <result property="parentMenuId" column="firstParentMenuId"/>
+        <result property="menuName" column="firstMenuName"/>
+        <result property="type" column="firstType"/>
+        <collection property="nextMenu" ofType="com.didoumi.www.data.entity.Menu">
+            <id property="id" column="secondId"/>
+            <result property="menuId" column="secondMenuId"/>
+            <result property="parentMenuId" column="secondParentMenuId"/>
+            <result property="menuName" column="secondMenuName"/>
+            <result property="type" column="secondType"/>
+            <collection property="nextMenu" ofType="com.didoumi.www.data.entity.Menu">
+                <id property="id" column="thirdId"/>
+                <result property="menuId" column="thirdMenuId"/>
+                <result property="parentMenuId" column="thirdParentMenuId"/>
+                <result property="menuName" column="thirdMenuName"/>
+                <result property="type" column="thirdType"/>
             </collection>
         </collection>
     </resultMap>
 
-    <select id="selectMenu" resultMap="menuMap" parameterType="String">
-        SELECT  m1.id,m1.`parentMenuId`,m1.`menuName`,m1.`type`,
-                m2.id,m2.`parentMenuId`,m2.`menuName`,m2.`type`,
-                m3.`id`,m3.parentMenuId,m3.`menuName`,m3.`type`
+    <!--动态加载左侧菜单栏数据-->
+    <select id="findMenuByUser" resultMap="menuMap" parameterType="String">
+        SELECT  m1.id as firstId,m1.menuId as firstMenuId,m1.parentMenuId as firstParentMenuId,m1.menuName as firstMenuName,m1.type as firstType,
+                m2.id as secondId,m2.menuId as secondMenuId,m2.parentMenuId as secondParentMenuId,m2.menuName as secondMenuName,m2.type as secondType,
+                m3.id as thirdId,m3.menuId as thirdMenuId,m3.parentMenuId as thirdParentMenuId,m3.menuName as thirdMenuName,m3.type as thirdType
         FROM menu m1
-        LEFT JOIN menu m2 ON m1.id = m2.`parentMenuId`
-        LEFT JOIN menu m3 ON m1.id = m2.`parentMenuId` AND m2.`id` = m3.`parentMenuId`
-        WHERE m1.`parentMenuId`=0 and userId=#{uid}
-        ORDER BY m1.`parentMenuId` ASC
+        LEFT JOIN menu m2 ON m1.id = m2.parentMenuId
+        LEFT JOIN menu m3 ON m1.id = m2.parentMenuId AND m2.id = m3.parentMenuId
+        WHERE m1.parentMenuId=0 and m1.userId=#{uid}
     </select>
 </mapper>

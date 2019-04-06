@@ -65,15 +65,11 @@ public class PageController {
             subject.login(token);
             // 获取用户的全部信息
             User user = (User) subject.getPrincipal();
-            List<Menu> firstMenu = menuService.findFirstMenuByUser(user.getUid());
-            List<Menu> thirdMenu = menuService.findThirdMenuByUser(user.getUid());
-            List<Menu> secondMenu = menuService.findSecondMenuByUser(user.getUid());
-            session.setAttribute("firstMenu", firstMenu);
-            session.setAttribute("thirdMenu", thirdMenu);
-            session.setAttribute("secondMenu", secondMenu);
+            List<Menu> menus = menuService.findMenuByUser(user.getUid());
+
             // 用于界面输出
             session.setAttribute("user", user);
-            //model.addAttribute("user",user);
+            session.setAttribute("menus", menus);
             return "redirect:/index";
         }
         catch (Exception e)
@@ -82,9 +78,4 @@ public class PageController {
         }
     }
 
-    @RequestMapping(value = "/firstMenu", method = RequestMethod.GET)
-    @ResponseBody
-    public List<Menu> getFirstMenu() {
-        return menuService.findFirstMenuByUser("");
-    }
 }

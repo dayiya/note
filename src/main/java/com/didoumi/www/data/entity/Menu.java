@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "menu")
@@ -41,4 +42,7 @@ public class Menu {
 
     @Column(name = "updateTime")
     private Date updateTime;
+
+    @Transient
+    private List<Menu> nextMenu;
 }

@@ -15,7 +15,7 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">教师管理系统</div>
+        <div class="layui-logo"><i class="layui-icon layui-icon-home" style="font-size: 20px; color: #009688;"></i>缤秋笔记</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
             <li class="layui-nav-item"><a href="">控制台</a></li>
@@ -49,20 +49,45 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-                <li class="layui-nav-item" th:each="firstMenu: ${session.firstMenu}">
-                    <a href="javascript:;"><span th:text="${firstMenu.getMenuName()}"></span></a>
-                    <dl th:each="secondMenu: ${session.secondMenu}" th:if="${firstMenu.getMenuId() eq secondMenu.getParentMenuId()}" class="layui-nav-child">
+                <li class="layui-nav-item" th:each="firstMenu: ${session.menus}">
+                    <a href="javascript:;">
+                        <i class="layui-icon layui-icon-tree" style="font-size: 20px; color: #009688;"></i>
+                        <span>
+                            [[${firstMenu.getMenuName()}]]
+                        </span>
+                        <span class="layui-nav-more"></span>
+                    </a>
+                    <dl th:each="secondMenu: ${firstMenu.getNextMenu()}" th:if="${secondMenu.getType() == '1'}"
+                        th:unless="${#lists.isEmpty(firstMenu.getNextMenu())}" class="layui-nav-child">
                         <dd>
-                            <a href="javascript:;" class="menu_three" th:id="${secondMenu.getId()}">[[${secondMenu.getMenuName()}]]</a>
-                            <ol class="layui-nav-child" style="display: none;" >
-                                <li th:each="thirdMenu: ${session.thirdMenu}" th:if="${secondMenu.getMenuId() eq thirdMenu.getParentMenuId()}" >
-                                    <a href="javascript:;">[[${thirdMenu.getMenuName()}]]</a>
+                            <a href="javascript:;" class="menu_three" th:id="${secondMenu.getId()}" onclick="showOrHidden(this);">
+                                <i class="layui-icon layui-icon-next" style="font-size: 8px;color: #009688;padding-left: 5px;">&nbsp;</i>
+                                <span style="font-size: 5px;">[[${secondMenu.getMenuName()}]]</span>
+                            </a>
+                            <ol th:unless="${#lists.isEmpty(secondMenu.getNextMenu())}" class="layui-nav-child" style="display: none;">
+                                <li th:each="thirdMenu: ${secondMenu.getNextMenu()}" th:unless="${#lists.isEmpty(firstMenu.getNextMenu())}">
+                                    <a href="javascript:;" th:data-thing="${thirdMenu.getId()}" onclick="skip(this.getAttribute('data-thing'));">
+                                        <span style="padding-left: 25px;font-size: 3px;">[[${thirdMenu.getMenuName()}]]</span>
+                                    </a>
                                 </li>
+                            </ol>
+                            <ol th:if="${#lists.isEmpty(secondMenu.getNextMenu())}" class="layui-nav-child" style="display: none;">
+                                <span style="padding-left: 50px;font-size: 3px;color: #009688;">暂无数据</span>
                             </ol>
                         </dd>
                     </dl>
-                    <dl th:each="thirdMenu: ${session.thirdMenu}" th:if="${firstMenu.getMenuId() eq thirdMenu.getParentMenuId()}" class="layui-nav-child">
-                        <dd><a href="javascript:;">[[${thirdMenu.getMenuName()}]]</a></dd>
+                    <dl th:each="secondMenu: ${firstMenu.getNextMenu()}" th:if="${secondMenu.getType() == '2'}"
+                        th:unless="${#lists.isEmpty(firstMenu.getNextMenu())}" class="layui-nav-child">
+                        <dd><a href="javascript:;" th:data-thing="${secondMenu.getId()}" onclick="skip(this.getAttribute('data-thing'));">
+                            <span style="padding-left: 25px;font-size: 5px;">[[${secondMenu.getMenuName()}]]</span>
+                        </a></dd>
+                    </dl>
+                    <dl th:if="${#lists.isEmpty(firstMenu.getNextMenu())}" class="layui-nav-child">
+                        <dd>
+                            <ol>
+                                <span style="padding-left: 50px;font-size: 3px;color: #009688;">暂无数据</span>
+                            </ol>
+                        </dd>
                     </dl>
                 </li>
             </ul>
@@ -86,24 +111,9 @@
 <script th:inline="javascript" type="text/javascript">
     layui.use(['element','jquery','tree'], function(){
         var element = layui.element,$=layui.jquery;
-        var flag = false;
-        [[${session.secondMenu}]].forEach(function (item) {
-            var flag = false;
-            $("#"+item.id).on("click", function () {
-                $(this).next().toggle();
-                var af = $(this).parent().find("ol");
-                if (flag) {
-                    af.css("display","none");
-                } else{
-                    af.css("display","block");
-                }
-                flag = !flag;
-            });
-        });
     });
 </script>
 <script th:inline="javascript" type="text/javascript">
-
     function logout() {
         $.ajax({
             type: 'POST',
@@ -114,6 +124,12 @@
                 window.location.href=[[@{/login}]];
             }
         });
+    }
+    function skip(noteId) {
+        console.log(noteId)
+    }
+    function showOrHidden(_this) {
+        $(_this).next().toggle();
     }
 </script>
 </body>

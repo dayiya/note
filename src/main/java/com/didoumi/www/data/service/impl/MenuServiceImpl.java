@@ -15,17 +15,7 @@ public class MenuServiceImpl implements MenuService {
     private MenuDao menuDao;
 
     @Override
-    public List<Menu> findFirstMenuByUser(String userId) {
-        return menuDao.findFirstMenuByUser(userId);
-    }
-
-    @Override
-    public List<Menu> findThirdMenuByUser(String userId) {
-        return menuDao.findThirdMenuByUser(userId);
-    }
-
-    @Override
-    public List<Menu> findSecondMenuByUser(String userId) {
-        return menuDao.findSecondMenuByUser(userId);
+    public List<Menu> findMenuByUser(String userId) {
+        return menuDao.findMenuByUser(userId);
     }
 }
