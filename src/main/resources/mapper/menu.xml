@@ -34,4 +34,15 @@
         LEFT JOIN menu m3 ON m1.id = m2.parentMenuId AND m2.id = m3.parentMenuId
         WHERE m1.parentMenuId=0 and m1.userId=#{uid}
     </select>
+
+    <select id="selectMenuByMenu" resultType="com.didoumi.www.data.entity.Menu" parameterType="com.didoumi.www.data.entity.Menu">
+        select id, menuId, menuName
+        from menu
+        where userId=#{userId} and parentMenuId=#{parentMenuId} and type=1
+    </select>
+
+    <insert id="insertMenu" parameterType="com.didoumi.www.data.entity.Menu">
+        insert into menu(id,menuId,parentMenuId,menuName,type,userId)
+        value(#{id},#{menuId},#{parentMenuId},#{menuName},#{type},#{userId})
+    </insert>
 </mapper>

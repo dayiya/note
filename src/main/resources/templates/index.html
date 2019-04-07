@@ -11,6 +11,10 @@
     .three_this{
         background-color: #ebba92!important;
     }
+    .layui-layer-page .layui-layer-content {
+        position: relative;
+        overflow: visible !important;
+    }
 </style>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -49,6 +53,9 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" id="createNewNoteBook" class="layui-btn" style="background-color: #009688">新建笔记本</a>
+                </li>
                 <li class="layui-nav-item" th:each="firstMenu: ${session.menus}">
                     <a href="javascript:;">
                         <i class="layui-icon layui-icon-tree" style="font-size: 20px; color: #009688;"></i>
@@ -109,9 +116,88 @@
 <script th:src="@{/layui/layui.js}"></script>
 <script th:src="@{/layui/js/jquery-3.3.1.min.js}"></script>
 <script th:inline="javascript" type="text/javascript">
-    layui.use(['element','jquery','tree'], function(){
-        var element = layui.element,$=layui.jquery;
+    layui.use(['element','jquery','layer','form'], function(){
+        var element = layui.element,$=layui.jquery,form=layui.form;
+        $("#createNewNoteBook").on("click",function () {
+            layer.open({      //屏蔽浏览器滚动条的弹框
+                title: '新建笔记本',
+                type: 1,
+                content: $("#createBookForm"),
+                area: '500px',
+                scrollbar: false
+            });
+            selectMenu('storageLocation','0');//动态加载select，参数一为select的id，参数二为父节点的id，0代表的是第一级的目录
+        });
+        form.on('select(storageLocation)', function(data){//监听select的变化
+            if (data.value==='0') {//console.log(data.value); //得到被选中的值
+                $("#secondStorageLocation").html("");
+                $("#secondStorageLocation").append("<option value='-1'>暂无数据</option>")//console.log(data.othis); //得到美化后的DOM对象
+                form.render();
+            } else {
+                selectMenu('secondStorageLocation',data.value);//console.log(data.elem); //得到select原始DOM对象
+            }
+        });
+        //点击提交按钮，创建新的日志本
+        form.on('submit(createMenuSubmit)', function(data){
+            var parentMenuId = "";//设置新建笔记本的父id
+            if (data.field.secondParentMenuId === "-1"){//若第二个select框为-1，则使用第一个select框的值作为父id
+                parentMenuId = data.field.firstParentMenuId;
+            } else {
+                parentMenuId = data.field.secondParentMenuId;//若第二个select框为不为-1，则使用第二个select框的值作为父id
+            }
+            data.field["parentMenuId"] = parentMenuId;//把parentMenuId添加到json字符串中
+            delete data.field["firstParentMenuId"];//删除json字符串里面多余的参数
+            delete data.field["secondParentMenuId"];//删除json字符串里面多余的参数
+            //提交请求
+            $.ajax({
+                type: 'POST',
+                url: [[@{/menu}]],
+                data: data.field,
+                dataType: "json",
+                success: function (data) {
+                    if (data.code === "200") {
+                        window.location.href=[[@{/index}]];
+                    }
+                }
+            });
+            return false;
+        });
     });
+    //根据不同的条件动态的加载select框里面的值
+    function selectMenu(elemId,parentMenuId) {//动态的加载select下的内容
+        $.ajax({
+            type: 'GET',
+            url: [[@{/menu}]],
+            data: {"parentMenuId":parentMenuId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code === "200") {
+                    $('#'+elemId).html("");//先将select下置为空
+                    $("#"+elemId).attr("disabled",false);//想将select重置为可选状态
+                    var optionHtml = "";//要填充的html代码
+                    if (parentMenuId === '0') {//为0，则是属于第一级目录，没有父目录
+                        optionHtml = "<option value='0'>根目录</option>";
+                    } else {
+                        optionHtml = "<option value='-1'>请选择（非必选）</option>";
+                    }
+                    var menuList = data.data;
+                    if (menuList.length > 0){
+                        $.each(menuList, function (i, item) {//循环拼接option数据
+                            optionHtml += "<option value="+item.menuId+" title='"+item.menuName+"'>"+item.menuName+"</option>";
+                        })
+                        $("#"+elemId).append(optionHtml);
+                    } else {
+                        $("#"+elemId).attr("disabled","disabled");
+                        $("#"+elemId).append("<option value='-1'>暂无数据</option>");
+                    }
+                    layui.use('form', function(){  //此段代码必不可少，重新渲染表单
+                        var form = layui.form;
+                        form.render();
+                    });
+                }
+            }
+        });
+    };
 </script>
 <script th:inline="javascript" type="text/javascript">
     function logout() {
@@ -133,4 +219,37 @@
     }
 </script>
 </body>
+<form class="layui-form" action="" id="createBookForm" style="padding:10px 10px 10px 10px;display:none">
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="padding-left: 0px;padding-right: 0px;width: 100px;">
+            <span style="color: red;">*</span>笔记本名称：</label>
+        <div class="layui-input-block">
+            <input type="text" name="menuName" required  lay-verify="required"
+                   placeholder="请输入笔记本的名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="padding-left: 0px;padding-right: 0px;width: 100px;">
+            <span style="color: red;">*</span>存放位置：</label>
+        <div class="layui-input-block">
+            <select name="firstParentMenuId" id="storageLocation"  lay-filter="storageLocation">
+
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="padding-left: 0px;padding-right: 0px;width: 100px;">
+            </label>
+        <div class="layui-input-block">
+            <select name="secondParentMenuId" id="secondStorageLocation" disabled="disabled">
+                <option value="-1">暂无数据</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="createMenuSubmit">立即提交</button>
+        </div>
+    </div>
+</form>
 </html>
