@@ -3,10 +3,11 @@ spring:
     encoding:
       charset: UTF-8
       enabled: true
+      force: true
   datasource:
-    url: jdbc:mysql://xx.xx.xx.xxx:3306/teachcrm
-    username: xxxx
-    password: xxxx
+    url: jdbc:mysql://111.111.111.111:3306/teachcrm?useUnicode=true&characterEncoding=utf-8
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   main:
