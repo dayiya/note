@@ -4,9 +4,9 @@ spring:
       charset: UTF-8
       enabled: true
   datasource:
-    url: jdbc:mysql://47.98.188.253:3306/teachcrm
-    username: root
-    password: qby519004654
+    url: jdbc:mysql://xx.xx.xx.xxx:3306/teachcrm
+    username: xxxx
+    password: xxxx
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   main:
