@@ -26,8 +26,4 @@ public class NoteUtil {
     public static Object getSessionForKey(HttpServletRequest request, String key) {
         return request.getSession().getAttribute(key);
     }
-    public static void main(String[] args) {
-        System.out.println(getId());
-        System.out.println(getId().length());
-    }
 }
