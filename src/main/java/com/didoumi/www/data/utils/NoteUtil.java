@@ -1,10 +1,7 @@
 package com.didoumi.www.data.utils;
 
-import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class NoteUtil {
