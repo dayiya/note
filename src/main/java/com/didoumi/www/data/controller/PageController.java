@@ -53,7 +53,8 @@ public class PageController {
     }
 
     @RequestMapping(value = "/loginUser", method = RequestMethod.POST)
-    public String loginUser(@RequestParam("username") String username, @RequestParam("password") String password,
+    @ResponseBody
+    public void loginUser(@RequestParam("username") String username, @RequestParam("password") String password,
                             HttpServletRequest request, HttpSession session) {
         // 初始化这个用户的token
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
@@ -70,11 +71,11 @@ public class PageController {
             // 用于界面输出
             session.setAttribute("user", user);
             session.setAttribute("menus", menus);
-            return "redirect:/index";
+            //return "redirect:/index";
         }
         catch (Exception e)
         {
-            return "login";
+            //return "login";
         }
     }
 
