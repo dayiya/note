@@ -4,13 +4,14 @@ package com.didoumi.www.data.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "menu")
 @Data
-public class Menu {
+public class Menu extends CommonFiled {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +31,6 @@ public class Menu {
 
     @Column(name = "userId")
     private String userId;
-
-    @Column(name = "createUser")
-    private String createUser;
-
-    @Column(name = "updateUser")
-    private String updateUser;
-
-    @Column(name = "createTime")
-    private Date createTime;
-
-    @Column(name = "updateTime")
-    private Date updateTime;
 
     @Transient
     private List<Menu> nextMenu;

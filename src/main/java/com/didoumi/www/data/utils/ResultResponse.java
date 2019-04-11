@@ -8,6 +8,6 @@ public class ResultResponse {
     private String errMsg;
     private Object data;
     public ResultResponse() {
-        this.code = "200";
+        this.code = Constant.TWOHANDER.getName();
     }
 }

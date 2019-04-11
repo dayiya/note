@@ -42,7 +42,28 @@
     </select>
 
     <insert id="insertMenu" parameterType="com.didoumi.www.data.entity.Menu">
-        insert into menu(id,menuId,parentMenuId,menuName,type,userId)
-        value(#{id},#{menuId},#{parentMenuId},#{menuName},#{type},#{userId})
+        insert into
+          menu(
+            id,
+            menuId,
+            parentMenuId,
+            menuName,
+            type,
+            userId,
+            createUser,
+            updateUser,
+            createTime,
+            updateTime)
+        value
+          (#{id},
+              #{menuId},
+              #{parentMenuId},
+              #{menuName},
+              #{type},
+              #{userId},
+              #{createUser},
+              #{updateUser},
+              #{createTime,jdbcType=DATE},
+              #{updateTime,jdbcType=DATE})
     </insert>
 </mapper>

@@ -1,7 +1,13 @@
 package com.didoumi.www.data.utils;
 
 
+import com.didoumi.www.data.entity.CommonFiled;
+import com.didoumi.www.data.entity.User;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 public class NoteUtil {
@@ -23,4 +29,23 @@ public class NoteUtil {
     public static Object getSessionForKey(HttpServletRequest request, String key) {
         return request.getSession().getAttribute(key);
     }
+
+    //设置创建人，创建时间，更新人，更新时间
+    public static void setCreteAndUpdateAndTime(CommonFiled commonFiled) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        User user = (User)request.getSession().getAttribute(Constant.USER.getName());
+        commonFiled.setCreateUser(user.getUsername());
+        commonFiled.setUpdateUser(user.getUsername());
+
+        setUpdateAndTime(commonFiled);
+    }
+
+    //设置更新人、更新时间
+    public static void setUpdateAndTime(CommonFiled commonFiled) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        commonFiled.setCreateTime(localDateTime);
+        commonFiled.setUpdateTime(localDateTime);
+    }
+
 }

@@ -3,18 +3,18 @@ package com.didoumi.www.data.controller;
 import com.didoumi.www.data.entity.Menu;
 import com.didoumi.www.data.entity.User;
 import com.didoumi.www.data.service.MenuService;
+import com.didoumi.www.data.utils.Constant;
+import com.didoumi.www.data.utils.ResultResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -54,8 +54,10 @@ public class PageController {
 
     @RequestMapping(value = "/loginUser", method = RequestMethod.POST)
     @ResponseBody
-    public void loginUser(@RequestParam("username") String username, @RequestParam("password") String password,
-                            HttpServletRequest request, HttpSession session) {
+    public ResultResponse loginUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpSession session) {
+
+        ResultResponse result = new ResultResponse();
+
         // 初始化这个用户的token
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         // 获取事件的主体
@@ -69,14 +71,15 @@ public class PageController {
             List<Menu> menus = menuService.findMenuByUser(user.getUid());
 
             // 用于界面输出
-            session.setAttribute("user", user);
-            session.setAttribute("menus", menus);
-            //return "redirect:/index";
+            session.setAttribute(Constant.USER.getName(), user);
+            session.setAttribute(Constant.MENU.getName(), menus);
+            result.setData(true);
         }
         catch (Exception e)
         {
-            //return "login";
+            result.setData(false);
         }
+        return  result;
     }
 
 }
